@@ -8,6 +8,7 @@ import com.example.weatherapp.domain.useCasesImpl.GetCurrentWeather
 import com.example.weatherapp.domain.useCasesImpl.GetCurrentWeatherInBulk
 import com.example.weatherapp.domain.util.NetworkResult
 import com.example.weatherapp.presentation.ui.UiState
+import com.example.weatherapp.presentation.util.EncryptedSharedPreference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,8 @@ import javax.inject.Inject
 class ReposViewModel @Inject constructor(
     private val getAllLocationSuggestions: GetAllLocationSuggestions,
     private val getCurrentWeather: GetCurrentWeather,
-    private val getCurrentWeatherInBulk: GetCurrentWeatherInBulk
+    private val getCurrentWeatherInBulk: GetCurrentWeatherInBulk,
+    private val encryptedSharedPreference: EncryptedSharedPreference
 ) : ViewModel() {
 
     private val _locationFlow = MutableStateFlow<UiState>(UiState.Loading)
