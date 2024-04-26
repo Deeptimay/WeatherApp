@@ -35,6 +35,8 @@ class WeatherViewModel @Inject constructor(
     var searchQuery by mutableStateOf("")
         private set
 
+    var currentWeatherList: List<LocationBulk> = listOf()
+
     private val _locationFlow = MutableStateFlow<LocationSearchData>(LocationSearchData())
     val locationFlow: StateFlow<LocationSearchData> = _locationFlow.asStateFlow()
 
@@ -51,8 +53,8 @@ class WeatherViewModel @Inject constructor(
     val showProgressBar: StateFlow<Boolean> = _showProgressBar.asStateFlow()
 
     init {
-        val placePreferenceData = encryptedSharedPreference.retrieveMyPreferredLocations()
-        val bulkDataRequest = BulkDataRequest(placePreferenceData)
+        currentWeatherList = encryptedSharedPreference.retrieveMyPreferredLocations()
+        val bulkDataRequest = BulkDataRequest(currentWeatherList)
         fetchCurrentWeatherByCityInBulk(bulkDataRequest)
     }
 
@@ -98,10 +100,10 @@ class WeatherViewModel @Inject constructor(
         val locationList = listOf(LocationBulk(location, System.currentTimeMillis().toString()))
         val placePreferenceData = encryptedSharedPreference.retrieveMyPreferredLocations()
 
-        val finalLocationList = locationList.plus(placePreferenceData)
-        val bulkDataRequest = BulkDataRequest(finalLocationList)
+        currentWeatherList = locationList.plus(placePreferenceData)
+        val bulkDataRequest = BulkDataRequest(currentWeatherList)
 
-        encryptedSharedPreference.saveMyPreferredLocations(finalLocationList)
+        encryptedSharedPreference.saveMyPreferredLocations(currentWeatherList)
         fetchCurrentWeatherByCityInBulk(bulkDataRequest)
     }
 

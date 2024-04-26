@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey_divider">#EFEFEF</color>
     <color name="card_orange">#FCF9F1</color>
+    <color name="swipe_delete_red">#E34C4C</color>
 </resources>

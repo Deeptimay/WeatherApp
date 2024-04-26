@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,12 +45,26 @@ fun CityListView(viewModel: WeatherViewModel) {
     val responseData by viewModel.currentWeatherFlowInBulk.collectAsState()
 
     when (responseData) {
-        is UiState.Error -> {}
-        UiState.Loading -> {}
+        is UiState.Error -> {
+            val errorData = responseData as? UiState.Error
+            if (!viewModel.currentWeatherList.isNullOrEmpty())
+                EmptyState(errorData.toString())
+            else
+                EmptyState("Search for a city or US/UK zip to check the weather")
+        }
+
+        UiState.Loading -> {
+            EmptyState("Loading Your Data")
+        }
+
         is UiState.Success<*> -> {
             val successData = responseData as? UiState.Success<*>
             val weatherCityListData = successData?.content as? FetchBulkData
-            weatherCityListData?.let { CityList(it.bulk, viewModel) }
+            if (weatherCityListData != null && !weatherCityListData.bulk.isNullOrEmpty()) {
+                weatherCityListData?.let { CityList(it.bulk, viewModel) }
+            } else {
+                EmptyState("Search for a city or US/UK zip to check the weather")
+            }
         }
     }
 }
@@ -62,10 +77,13 @@ fun CityList(weatherData: List<Bulk>, viewModel: WeatherViewModel) {
             var expanded by remember { mutableStateOf(false) }
             Card(
                 modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
-                onClick = { expanded = !expanded }
-            ) {
-                CityListItem(cityList, expanded) { viewModel.removeSwipedWeatherByCityController(it) }
-            }
+                elevation = 0.dp,
+                onClick = { expanded = !expanded },
+                content = {
+                    CityListItem(cityList, expanded) { viewModel.removeSwipedWeatherByCityController(it) }
+                }
+            )
+            ListDivider()
         }
     }
 }
@@ -133,6 +151,7 @@ fun CardContent(cityList: Bulk, expanded: Boolean) {
                                 .width(174.dp)
                                 .height(74.dp)
                                 .fillMaxWidth(),
+                            elevation = 0.dp,
                             backgroundColor = colorResource(R.color.card_orange)
 
                         ) {
@@ -144,6 +163,7 @@ fun CardContent(cityList: Bulk, expanded: Boolean) {
                                 .padding(8.dp)
                                 .height(74.dp)
                                 .fillMaxWidth(),
+                            elevation = 0.dp,
                             backgroundColor = colorResource(R.color.card_orange)
                         ) {
                             GridItem("UV index", uvIndex)
@@ -156,6 +176,7 @@ fun CardContent(cityList: Bulk, expanded: Boolean) {
                                 .padding(8.dp)
                                 .height(74.dp)
                                 .fillMaxWidth(),
+                            elevation = 0.dp,
                             backgroundColor = colorResource(R.color.card_orange)
                         ) {
                             GridItem("Wind", wind)
@@ -166,6 +187,7 @@ fun CardContent(cityList: Bulk, expanded: Boolean) {
                                 .padding(8.dp)
                                 .height(74.dp)
                                 .fillMaxWidth(),
+                            elevation = 0.dp,
                             backgroundColor = colorResource(R.color.card_orange)
                         ) {
                             GridItem("Sun", sun)
@@ -173,19 +195,8 @@ fun CardContent(cityList: Bulk, expanded: Boolean) {
                     }
                 }
             }
-//                androidx.compose.material.Text(text = ("Lorem ipsum composium is so cool!!!!!\t").repeat(3))
         }
     }
-//        androidx.compose.material.IconButton(onClick = { expanded = !expanded }) {
-//            Icon(
-//                imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-//                contentDescription = if (expanded) {
-//                    stringResource(id = R.string.show_less)
-//                } else {
-//                    stringResource(id = R.string.show_more)
-//                }
-//            )
-//        }
 }
 
 @Composable
@@ -213,56 +224,11 @@ fun GridItem(title: String, value: String) {
         )
     }
 }
-//
-//@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
-//@Composable
-//fun gridView() {
-//
-//    lateinit var courseList: List<GridModal>
-//    courseList = ArrayList<GridModal>()
-//
-//    // on below line we are adding data to our list.
-//    courseList = courseList + GridModal("Android", R.drawable.android)
-//    courseList = courseList + GridModal("JavaScript", R.drawable.js)
-//    courseList = courseList + GridModal("Python", R.drawable.python)
-//    courseList = courseList + GridModal("C++", R.drawable.c)
-//    courseList = courseList + GridModal("C#", R.drawable.csharp)
-//    courseList = courseList + GridModal("Java", R.drawable.java)
-//    courseList = courseList + GridModal("Node Js", R.drawable.nodejs)
-//
-//    LazyVerticalGrid(
-//        columns = GridCells.Fixed(2),
-//        modifier = Modifier.padding(10.dp)
-//    ) {
-//        items(courseList.size) {
-//            Card(
-//                onClick = {},
-//                modifier = Modifier.padding(8.dp),
-////                elevation = 6.dp
-//            ) {
-//                Column(
-//                    Modifier
-//                        .fillMaxSize()
-//                        .padding(5.dp),
-//                    horizontalAlignment = Alignment.CenterHorizontally,
-//                    verticalArrangement = Arrangement.Center
-//                ) {
-//                    Image(
-//                        painter = painterResource(id = courseList[it].languageImg),
-//                        contentDescription = "Javascript",
-//                        modifier = Modifier
-//                            .height(60.dp)
-//                            .width(60.dp)
-//                            .padding(5.dp)
-//                    )
-//                    Spacer(modifier = Modifier.height(9.dp))
-//                    Text(
-//                        text = courseList[it].languageName,
-//                        modifier = Modifier.padding(4.dp),
-//                        color = Color.Black
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
+
+@Composable
+fun ListDivider() {
+    Divider(
+        modifier = Modifier.padding(start = 14.dp),
+        color = colorResource(id = R.color.grey_divider)
+    )
+}

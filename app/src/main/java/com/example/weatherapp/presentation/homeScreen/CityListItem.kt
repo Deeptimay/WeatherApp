@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeOut
+import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SwipeToDismiss
@@ -49,7 +50,8 @@ fun CityListItem(
             },
             dismissContent = {
                 CardContent(cityList, expanded)
-            }
+            },
+            directions =  setOf(DismissDirection.EndToStart)
         )
     }
 
