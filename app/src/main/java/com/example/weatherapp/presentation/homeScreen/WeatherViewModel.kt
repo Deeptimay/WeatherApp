@@ -1,8 +1,15 @@
 package com.example.weatherapp.presentation.homeScreen
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.data.models.Bulk
 import com.example.weatherapp.data.models.BulkDataRequest
+import com.example.weatherapp.data.models.Location
+import com.example.weatherapp.data.models.LocationBulk
+import com.example.weatherapp.data.models.LocationSearchData
 import com.example.weatherapp.domain.useCasesImpl.GetAllLocationSuggestions
 import com.example.weatherapp.domain.useCasesImpl.GetCurrentWeather
 import com.example.weatherapp.domain.useCasesImpl.GetCurrentWeatherInBulk
@@ -18,15 +25,21 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ReposViewModel @Inject constructor(
+class WeatherViewModel @Inject constructor(
     private val getAllLocationSuggestions: GetAllLocationSuggestions,
     private val getCurrentWeather: GetCurrentWeather,
     private val getCurrentWeatherInBulk: GetCurrentWeatherInBulk,
     private val encryptedSharedPreference: EncryptedSharedPreference
 ) : ViewModel() {
 
-    private val _locationFlow = MutableStateFlow<UiState>(UiState.Loading)
-    val locationFlow: StateFlow<UiState> = _locationFlow.asStateFlow()
+    var searchQuery by mutableStateOf("")
+        private set
+
+    private val _locationFlow = MutableStateFlow<LocationSearchData>(LocationSearchData())
+    val locationFlow: StateFlow<LocationSearchData> = _locationFlow.asStateFlow()
+
+    private val _selectedLocationFlow = MutableStateFlow<Location>(Location())
+    val selectedLocationFlow: StateFlow<Location> = _selectedLocationFlow.asStateFlow()
 
     private val _currentWeatherFlow = MutableStateFlow<UiState>(UiState.Loading)
     val currentWeatherFlow: StateFlow<UiState> = _currentWeatherFlow.asStateFlow()
@@ -34,13 +47,23 @@ class ReposViewModel @Inject constructor(
     private val _currentWeatherFlowInBulk = MutableStateFlow<UiState>(UiState.Loading)
     val currentWeatherFlowInBulk: StateFlow<UiState> = _currentWeatherFlowInBulk.asStateFlow()
 
-    fun fetchAllLocationSuggestions(query: String) {
+    private val _showProgressBar = MutableStateFlow<Boolean>(false)
+    val showProgressBar: StateFlow<Boolean> = _showProgressBar.asStateFlow()
+
+    init {
+        val placePreferenceData = encryptedSharedPreference.retrieveMyPreferredLocations()
+        val bulkDataRequest = BulkDataRequest(placePreferenceData)
+        fetchCurrentWeatherByCityInBulk(bulkDataRequest)
+    }
+
+    private fun fetchAllLocationSuggestions(query: String) {
+        _selectedLocationFlow.value.name = query
         viewModelScope.launch {
             val response = getAllLocationSuggestions(query)
             _locationFlow.update {
                 when (response) {
-                    is NetworkResult.ApiError -> UiState.Error(response.errorData)
-                    is NetworkResult.ApiSuccess -> UiState.Success(response.data)
+                    is NetworkResult.ApiError -> LocationSearchData()
+                    is NetworkResult.ApiSuccess -> response.data
                 }
             }
         }
@@ -58,7 +81,7 @@ class ReposViewModel @Inject constructor(
         }
     }
 
-    fun fetchCurrentWeatherByCityInBulk(bulkDataRequest: BulkDataRequest) {
+    private fun fetchCurrentWeatherByCityInBulk(bulkDataRequest: BulkDataRequest) {
         viewModelScope.launch {
             val response = getCurrentWeatherInBulk(bulkDataRequest)
             _currentWeatherFlowInBulk.update {
@@ -68,5 +91,32 @@ class ReposViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun fetchCurrentWeatherByCityController(location: String) {
+        onSearchQueryChange("")
+        val locationList = listOf(LocationBulk(location, System.currentTimeMillis().toString()))
+        val placePreferenceData = encryptedSharedPreference.retrieveMyPreferredLocations()
+
+        val finalLocationList = locationList.plus(placePreferenceData)
+        val bulkDataRequest = BulkDataRequest(finalLocationList)
+
+        encryptedSharedPreference.saveMyPreferredLocations(finalLocationList)
+        fetchCurrentWeatherByCityInBulk(bulkDataRequest)
+    }
+
+    fun removeSwipedWeatherByCityController(bulk: Bulk) {
+        val placePreferenceData = encryptedSharedPreference.retrieveMyPreferredLocations()
+        val placePreferenceDataMutable = placePreferenceData.toMutableList()
+        placePreferenceDataMutable.removeIf { it.custom_id == bulk.query.custom_id }
+        encryptedSharedPreference.saveMyPreferredLocations(placePreferenceDataMutable)
+    }
+
+    fun onSearchQueryChange(newQuery: String) {
+        searchQuery = newQuery
+        if (newQuery.isNotEmpty())
+            fetchAllLocationSuggestions(searchQuery)
+        else
+            _locationFlow.value = LocationSearchData()
     }
 }

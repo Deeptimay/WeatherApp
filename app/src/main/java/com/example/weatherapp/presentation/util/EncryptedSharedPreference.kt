@@ -4,13 +4,24 @@ import android.content.Context
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import com.example.weatherapp.data.models.LocationBulk
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import dagger.Module
+import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import java.io.File
 import java.nio.charset.StandardCharsets
-import javax.inject.Singleton
+import javax.inject.Inject
 
-@Singleton
-class EncryptedSharedPreference(@ApplicationContext appContext: Context) {
+
+const val placePreference = "placePreference"
+const val placePreferenceWeatherData = "placePreferenceWeatherData"
+
+@Module
+@InstallIn(SingletonComponent::class)
+class EncryptedSharedPreference @Inject constructor(@ApplicationContext appContext: Context) {
 
     private val mainKeyAlias by lazy {
         val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
@@ -29,7 +40,7 @@ class EncryptedSharedPreference(@ApplicationContext appContext: Context) {
         )
     }
 
-    fun writeToSharedPrefs(key: String, value: Any?) {
+    private fun writeToSharedPrefs(key: String, value: Any?) {
         with(sharedPreferences.edit()) {
             when (value) {
                 is String -> this.putString(key, value)
@@ -64,6 +75,19 @@ class EncryptedSharedPreference(@ApplicationContext appContext: Context) {
             mainKeyAlias,
             EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
         ).build()
+    }
+
+    fun saveMyPreferredLocations(myObjects: List<LocationBulk>) {
+        val gson = Gson()
+        val json = gson.toJson(myObjects)
+        writeToSharedPrefs(placePreference, json)
+    }
+
+    fun retrieveMyPreferredLocations(): List<LocationBulk> {
+        val gson = Gson()
+        val json = readFromSharedPrefs(placePreference, "")
+        val type = object : TypeToken<List<LocationBulk>>() {}.type
+        return gson.fromJson(json, type) ?: emptyList()
     }
 
     fun writeToEncryptedFile(content: String) {

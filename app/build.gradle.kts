@@ -5,7 +5,6 @@ plugins {
     id("kotlin-kapt")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
-    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -58,8 +57,6 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
@@ -74,47 +71,50 @@ dependencies {
 
 
     //Standards
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0")
-    kapt("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation("androidx.cardview:cardview:1.0.0")
-
-    //Nav Fragment
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.1")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.1")
+    implementation(libs.kotlin.stdlib.jdk8)
+    kapt(libs.kotlinx.metadata.jvm)
 
     //Jetpack suits libs
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.fragment:fragment-ktx:1.6.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation(libs.androidx.lifecycle.extensions)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.security.crypto)
 
-    //Material
-    implementation("com.google.android.material:material:1.9.0")
-    implementation("androidx.paging:paging-runtime-ktx:3.2.0")
+    //Compose
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.material)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.ui)
+    implementation(libs.androidx.material.icons.extended)
 
-    //Animations
-    implementation("jp.wasabeef:recyclerview-animators:4.0.2")
-    implementation("com.facebook.shimmer:shimmer:0.5.0")
-    implementation("com.github.bumptech.glide:glide:4.15.1")
-    kapt("com.github.bumptech.glide:compiler:4.15.1")
+
+    //ViewModel
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+
+    // Lifecycle and LiveData
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+//    implementation(libs.androidx.activity.compose.v140)
+
+    //Material
+    implementation(libs.material)
 
     //Multidex
-    implementation("androidx.multidex:multidex:2.0.1")
+    implementation(libs.androidx.multidex)
 
     // network
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.retrofit)
+    implementation(libs.logging.interceptor)
+    implementation(libs.gson)
+    implementation(libs.converter.gson)
 
     // dagger hilt
-    implementation("com.google.dagger:hilt-android:2.47")
-    kapt("com.google.dagger:hilt-android-compiler:2.47")
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    kapt(libs.hilt.android.compiler)
 
     // testing
     testImplementation("junit:junit:4.13.2")

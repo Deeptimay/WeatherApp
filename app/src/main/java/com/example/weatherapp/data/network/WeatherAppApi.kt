@@ -12,12 +12,12 @@ import retrofit2.http.Query
 
 interface WeatherAppApi {
 
-    @GET("/search.json")
+    @GET("search.json")
     suspend fun locationAutoComplete(@Query("q") queryString: String): Response<LocationSearchData>
 
-    @GET("/current.json")
+    @GET("current.json")
     suspend fun getCurrentWeather(@Query("q") location: String): Response<CurrentWeatherData>
 
-    @POST("/current.json")
+    @POST("current.json")
     suspend fun getCurrentWeatherInBulk(@Body bulkDataRequest: BulkDataRequest, @Query("q") queryString: String = "bulk"): Response<FetchBulkData>
 }

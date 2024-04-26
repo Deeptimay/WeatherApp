@@ -74,7 +74,7 @@ object RetrofitModule {
 
     @Provides
     @Named("baseUrl")
-    fun provideBaseUrl(): String = "http://api.weatherapi.com/v1"
+    fun provideBaseUrl(): String = "http://api.weatherapi.com/v1/"
 
     @Provides
     @Named("apiKey")
