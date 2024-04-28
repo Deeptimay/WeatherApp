@@ -59,7 +59,6 @@ fun CityListItem(
         if (!show) {
             delay(800)
             onRemove(currentItem)
-            Toast.makeText(context, "Item removed", Toast.LENGTH_SHORT).show()
         }
     }
 } 

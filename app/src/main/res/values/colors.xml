@@ -10,4 +10,6 @@
     <color name="grey_divider">#EFEFEF</color>
     <color name="card_orange">#FCF9F1</color>
     <color name="swipe_delete_red">#E34C4C</color>
+    <color name="text_color">#364A7D</color>
+    <color name="text_color_two">#303030</color>
 </resources>

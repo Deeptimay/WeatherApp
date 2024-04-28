@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.ui.tooling.preview)
     implementation(libs.ui)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.coil.compose)
 
 
     //ViewModel

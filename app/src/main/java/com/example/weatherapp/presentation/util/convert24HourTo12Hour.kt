@@ -11,3 +11,10 @@ fun convert24HourTo12Hour(time24Hour: String): String {
     val time: Date? = sdf24Hour.parse(time24Hour)
     return time?.let { sdf12Hour.format(it) } ?: ""
 }
+
+fun isDaytime(time: String): Boolean {
+    val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val date: Date = dateFormat.parse(time) ?: return false
+    val hour = date.hours
+    return hour in 6..17 // Assuming daytime is from 6 AM to 5 PM
+}
