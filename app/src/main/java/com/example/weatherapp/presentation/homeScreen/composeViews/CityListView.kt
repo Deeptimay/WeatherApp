@@ -75,7 +75,6 @@ fun CityList(weatherData: List<Bulk>, viewModel: WeatherViewModel) {
                     CityListItemWrapper(cityList, expanded) { viewModel.removeSwipedWeatherByCityController(it) }
                 }
             )
-
         }
     }
 }
