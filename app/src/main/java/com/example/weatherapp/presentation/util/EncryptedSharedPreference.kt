@@ -12,12 +12,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.io.File
-import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 
 const val placePreference = "placePreference"
-const val placePreferenceWeatherData = "placePreferenceWeatherData"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -88,26 +86,5 @@ class EncryptedSharedPreference @Inject constructor(@ApplicationContext appConte
         val json = readFromSharedPrefs(placePreference, "")
         val type = object : TypeToken<List<LocationBulk>>() {}.type
         return gson.fromJson(json, type) ?: emptyList()
-    }
-
-    fun writeToEncryptedFile(content: String) {
-        encryptedFile.openFileOutput().use {
-            it.write(content.toByteArray(StandardCharsets.UTF_8))
-            it.flush()
-        }
-    }
-
-    fun readFromEncryptedFile(): String {
-        val fileContent = ByteArray(32000)
-        val numBytesRead: Int
-
-        try {
-            encryptedFile.openFileInput().use {
-                numBytesRead = it.read(fileContent)
-            }
-        } catch (e: Exception) {
-            return ""
-        }
-        return String(fileContent, 0, numBytesRead)
     }
 }

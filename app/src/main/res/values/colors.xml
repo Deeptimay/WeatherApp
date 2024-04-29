@@ -12,4 +12,7 @@
     <color name="swipe_delete_red">#E34C4C</color>
     <color name="text_color">#364A7D</color>
     <color name="text_color_two">#303030</color>
+    <color name="search_icons">#BEBEBE</color>
+    <color name="search_bar">#F4F4F4</color>
+    <color name="empty_screen">#E5E5E5</color>
 </resources>

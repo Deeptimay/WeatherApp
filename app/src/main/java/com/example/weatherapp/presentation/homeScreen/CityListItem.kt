@@ -1,6 +1,5 @@
 package com.example.weatherapp.presentation.homeScreen
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeOut
@@ -17,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.weatherapp.data.models.Bulk
 import kotlinx.coroutines.delay
@@ -28,7 +26,6 @@ fun CityListItem(
     cityList: Bulk, expanded: Boolean,
     onRemove: (Bulk) -> Unit
 ) {
-    val context = LocalContext.current
     var show by remember { mutableStateOf(true) }
     val currentItem by rememberUpdatedState(cityList)
     val dismissState = rememberDismissState(
@@ -51,7 +48,7 @@ fun CityListItem(
             dismissContent = {
                 CardContent(cityList, expanded)
             },
-            directions =  setOf(DismissDirection.EndToStart)
+            directions = setOf(DismissDirection.EndToStart)
         )
     }
 

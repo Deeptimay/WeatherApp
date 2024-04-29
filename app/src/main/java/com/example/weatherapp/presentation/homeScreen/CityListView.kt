@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,14 +54,20 @@ fun CityListView(viewModel: WeatherViewModel) {
     when (responseData) {
         is UiState.Error -> {
             val errorData = responseData as? UiState.Error
+
+            if (errorData.toString().contains(stringResource(R.string.unknownhostexception))) {
+                EmptyState(stringResource(R.string.please_check_your_internet))
+                return
+            }
+
             if (!viewModel.currentWeatherList.isNullOrEmpty())
                 EmptyState(errorData.toString())
             else
-                EmptyState("Search for a city or US/UK zip to check the weather")
+                EmptyState(stringResource(R.string.search_for_a_city_or_us_uk_zip_to_check_the_weather))
         }
 
         UiState.Loading -> {
-            EmptyState("Loading Your Data")
+            EmptyState(stringResource(R.string.loading_your_data))
         }
 
         is UiState.Success<*> -> {
@@ -69,7 +76,7 @@ fun CityListView(viewModel: WeatherViewModel) {
             if (weatherCityListData != null && !weatherCityListData.bulk.isNullOrEmpty()) {
                 weatherCityListData?.let { CityList(it.bulk, viewModel) }
             } else {
-                EmptyState("Search for a city or US/UK zip to check the weather")
+                EmptyState(stringResource(R.string.search_for_a_city_or_us_uk_zip_to_check_the_weather))
             }
         }
     }
@@ -83,7 +90,7 @@ fun CityList(weatherData: List<Bulk>, viewModel: WeatherViewModel) {
             .padding(vertical = 4.dp)
             .background(color = Color.White)
     ) {
-        itemsIndexed(items = weatherData) { index, cityList ->
+        itemsIndexed(items = weatherData) { _, cityList ->
             var expanded by remember { mutableStateOf(false) }
             Card(
                 elevation = 0.dp,
@@ -176,12 +183,11 @@ fun CardContent(cityList: Bulk, expanded: Boolean) {
                     .fillMaxWidth()
 
             ) {
-
                 Text(
                     text = cityList.query.location.name,
                     Modifier
                         .align(Alignment.TopStart)
-                        .padding(top = 35.dp, start = 12.dp),
+                        .padding(top = 30.dp, start = 12.dp),
                     fontSize = 24.sp,
                 )
                 Text(
@@ -198,24 +204,29 @@ fun CardContent(cityList: Bulk, expanded: Boolean) {
                         .padding(bottom = 12.dp, end = 12.dp),
                     fontSize = 14.sp,
                 )
-
                 Row(
                     Modifier
                         .align(Alignment.TopEnd)
-                        .padding(top = 35.dp, end = 12.dp)
+                        .padding(top = 30.dp, end = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = cityList.query.current.temp_c.toString() + " c ",
+                        text = buildString {
+                            append(cityList.query.current.temp_c.toString())
+                            append(stringResource(R.string.celsius))
+                            append(stringResource(R.string.c))
+                        },
                         fontSize = 24.sp,
                     )
                     Image(
-                        modifier = Modifier.size(width = 22.dp, height = 22.dp),
+                        modifier = Modifier
+                            .size(width = 22.dp, height = 22.dp)
+                            .padding(start = 5.dp),
                         painter = painterResource(id = id),
-                        contentDescription = "Weather Condition"
+                        contentDescription = stringResource(R.string.weather_condition)
                     )
                 }
             }
-
             if (expanded) {
                 ExtendedItemNew(cityList)
             }
@@ -288,11 +299,17 @@ fun ExtendedItemNew(cityList: Bulk) {
 @Composable
 fun GridItem(title: String, cityList: Bulk) {
 
-    val precipitation = cityList.query.current.uv.toString() + " mm"
+    val precipitation = buildString {
+        append(cityList.query.current.uv.toString())
+        append(stringResource(R.string.mm))
+    }
     val uvIndex = cityList.query.current.wind_kph.toString()
-    val wind = cityList.query.current.wind_kph.toString() + " kph"
+    val wind = buildString {
+        append(cityList.query.current.wind_kph.toString())
+        append(stringResource(R.string.kph))
+    }
     val windDir = cityList.query.current.wind_dir
-    val sun = "6:00 am"
+    val sun = stringResource(R.string._6_00_am)
 
     var textValue = ""
     val id = when (title) {
@@ -384,7 +401,7 @@ fun GridItem(title: String, cityList: Bulk) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.sunrise),
-                        contentDescription = "icon",
+                        contentDescription = stringResource(R.string.icon),
                         Modifier
                             .height(14.dp)
                             .width(14.dp)
@@ -396,7 +413,7 @@ fun GridItem(title: String, cityList: Bulk) {
                             .padding(end = 5.dp)
                             .wrapContentWidth()
                             .wrapContentHeight(),
-                        text = "6:04 am",
+                        text = stringResource(R.string._6_04_am),
                         style = TextStyle(
                             color = colorResource(id = R.color.text_color),
                             fontSize = 12.sp,
@@ -405,7 +422,7 @@ fun GridItem(title: String, cityList: Bulk) {
                     )
                     Icon(
                         painter = painterResource(id = R.drawable.sunset),
-                        contentDescription = "icon",
+                        contentDescription = stringResource(R.string.icon),
                         Modifier
                             .padding(start = 5.dp, end = 5.dp)
                             .height(14.dp)
@@ -416,7 +433,7 @@ fun GridItem(title: String, cityList: Bulk) {
                         modifier = Modifier
                             .wrapContentWidth()
                             .wrapContentHeight(),
-                        text = "6:49 pm",
+                        text = stringResource(R.string._6_49_pm),
                         style = TextStyle(
                             color = colorResource(id = R.color.text_color),
                             fontSize = 12.sp,
