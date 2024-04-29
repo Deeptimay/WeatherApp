@@ -1,4 +1,4 @@
-package com.example.weatherapp.presentation.homeScreen.composeViews
+package com.example.weatherapp.presentation.homeScreen
 
 
 import android.os.Bundle
@@ -19,12 +19,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.weatherapp.R
+import com.example.weatherapp.presentation.homeScreen.composeViews.CityListView
+import com.example.weatherapp.presentation.homeScreen.composeViews.SearchView
 import com.example.weatherapp.presentation.homeScreen.viewModels.WeatherViewModel
 import com.example.weatherapp.ui.theme.WeatherAppTheme
+import com.example.weatherapp.ui.theme.avenirFontFamily
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -76,8 +79,9 @@ fun TextView() {
                 fontWeight = FontWeight.Black,
                 background = Color.White,
                 textAlign = TextAlign.Center,
+                fontFamily = avenirFontFamily
             ),
-            modifier = Modifier.padding(all = Dp(20.0F))
+            modifier = Modifier.padding(16.dp)
         )
     }
 }

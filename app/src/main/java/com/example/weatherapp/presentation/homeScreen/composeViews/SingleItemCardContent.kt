@@ -33,6 +33,8 @@ import com.example.weatherapp.R
 import com.example.weatherapp.data.models.Bulk
 import com.example.weatherapp.presentation.util.convert24HourTo12Hour
 import com.example.weatherapp.presentation.util.isDaytime
+import com.example.weatherapp.ui.theme.avenirFontFamily
+import com.example.weatherapp.ui.theme.newYorkFontFamily
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -48,7 +50,7 @@ fun SingleItemCardContent(cityList: Bulk) {
             if (isDay)
                 R.drawable.day
             else
-                R.drawable.night
+                R.drawable.night_cloudy
         }
 
         cityList.query.current.condition.text.contains("rain", ignoreCase = true) -> {
@@ -91,7 +93,7 @@ fun SingleItemCardContent(cityList: Bulk) {
         else -> if (isDay)
             R.drawable.day
         else
-            R.drawable.night
+            R.drawable.night_cloudy
     }
 
     Card(
@@ -120,6 +122,7 @@ fun SingleItemCardContent(cityList: Bulk) {
                         .align(Alignment.TopStart)
                         .padding(top = 30.dp, start = 12.dp),
                     fontSize = 24.sp,
+                    fontFamily = newYorkFontFamily
                 )
                 Text(
                     text = cityList.query.location.region + ", " + cityList.query.location.country,
@@ -127,6 +130,7 @@ fun SingleItemCardContent(cityList: Bulk) {
                         .align(Alignment.BottomStart)
                         .padding(bottom = 12.dp, start = 12.dp),
                     fontSize = 14.sp,
+                    fontFamily = avenirFontFamily
                 )
                 Text(
                     text = timeIn12Hour,
@@ -134,6 +138,7 @@ fun SingleItemCardContent(cityList: Bulk) {
                         .align(Alignment.BottomEnd)
                         .padding(bottom = 12.dp, end = 12.dp),
                     fontSize = 14.sp,
+                    fontFamily = avenirFontFamily
                 )
                 Row(
                     Modifier
@@ -148,10 +153,11 @@ fun SingleItemCardContent(cityList: Bulk) {
                             append(stringResource(R.string.c))
                         },
                         fontSize = 24.sp,
+                        fontFamily = avenirFontFamily
                     )
                     Image(
                         modifier = Modifier
-                            .size(width = 22.dp, height = 22.dp)
+                            .size(width = 30.dp, height = 30.dp)
                             .padding(start = 5.dp),
                         painter = painterResource(id = id),
                         contentDescription = stringResource(R.string.weather_condition)

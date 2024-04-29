@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.R
+import com.example.weatherapp.ui.theme.avenirFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,14 +37,17 @@ fun DismissBackground(dismissState: DismissState) {
             .background(color)
     ) {
         if (direction == DismissDirection.EndToStart)
-            Column(modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 12.dp)) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 12.dp)
+            ) {
                 Text(
                     text = stringResource(R.string.delete),
                     fontSize = 16.sp,
                     textAlign = TextAlign.End,
-                    color = Color.White
+                    color = Color.White,
+                    fontFamily = avenirFontFamily
                 )
             }
     }

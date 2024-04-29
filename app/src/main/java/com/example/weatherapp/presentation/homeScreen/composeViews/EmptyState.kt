@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.R
+import com.example.weatherapp.ui.theme.avenirFontFamily
 
 @Composable
 fun EmptyState(message: String) {
@@ -44,7 +45,8 @@ fun EmptyState(message: String) {
             text = message,
             fontSize = 16.sp,
             textAlign = TextAlign.Center,
-            color = colorResource(id = R.color.search_icons)
+            color = colorResource(id = R.color.search_icons),
+            fontFamily = avenirFontFamily
         )
     }
 }

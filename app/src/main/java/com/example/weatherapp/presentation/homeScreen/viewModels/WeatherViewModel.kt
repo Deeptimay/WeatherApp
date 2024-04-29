@@ -15,6 +15,7 @@ import com.example.weatherapp.domain.useCasesImpl.GetCurrentWeatherInBulk
 import com.example.weatherapp.domain.useCasesImpl.UpdateCityListToSharedPreferences
 import com.example.weatherapp.domain.util.NetworkResult
 import com.example.weatherapp.presentation.ui.UiState
+import com.example.weatherapp.presentation.util.debounce
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +31,8 @@ class WeatherViewModel @Inject constructor(
     private val fetchSavedCityListFromSharedPreferences: FetchSavedCityListFromSharedPreferences,
     private val updateCityListToSharedPreferences: UpdateCityListToSharedPreferences
 ) : ViewModel() {
+
+    val debounceTextChange = debounce<String>(500L, viewModelScope) { fetchAllLocationSuggestions(it) }
 
     var searchQuery by mutableStateOf("")
         private set
@@ -104,7 +107,7 @@ class WeatherViewModel @Inject constructor(
     fun onSearchQueryChange(newQuery: String) {
         searchQuery = newQuery
         if (newQuery.isNotEmpty())
-            fetchAllLocationSuggestions(searchQuery)
+            debounceTextChange(searchQuery)
         else
             _locationFlow.value = LocationSearchData()
     }

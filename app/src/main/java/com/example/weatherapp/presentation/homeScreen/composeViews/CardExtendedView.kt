@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.R
 import com.example.weatherapp.data.models.Bulk
+import com.example.weatherapp.ui.theme.avenirFontFamily
 
 
 @Composable
@@ -170,6 +171,7 @@ fun GridItem(title: String, cityList: Bulk) {
                         fontSize = 12.sp,
                     ),
                     textAlign = TextAlign.Center,
+                    fontFamily = avenirFontFamily
                 )
             }
             if (!title.equals("Sun", ignoreCase = true)) {
@@ -184,7 +186,8 @@ fun GridItem(title: String, cityList: Bulk) {
                         fontSize = 16.sp,
                     ),
                     textAlign = TextAlign.Center,
-                    color = Color.Black
+                    color = Color.Black,
+                    fontFamily = avenirFontFamily
                 )
             } else {
                 Row(
@@ -214,6 +217,7 @@ fun GridItem(title: String, cityList: Bulk) {
                             fontSize = 12.sp,
                         ),
                         textAlign = TextAlign.Center,
+                        fontFamily = avenirFontFamily
                     )
                     Icon(
                         painter = painterResource(id = R.drawable.sunset),
@@ -234,6 +238,7 @@ fun GridItem(title: String, cityList: Bulk) {
                             fontSize = 12.sp,
                         ),
                         textAlign = TextAlign.Center,
+                        fontFamily = avenirFontFamily
                     )
                 }
             }
@@ -252,7 +257,8 @@ fun GridItem(title: String, cityList: Bulk) {
                 ),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.End,
-                color = Color.Black
+                color = Color.Black,
+                fontFamily = avenirFontFamily
             )
     }
 }

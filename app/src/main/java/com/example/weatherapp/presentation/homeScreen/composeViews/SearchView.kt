@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.example.weatherapp.R
 import com.example.weatherapp.data.models.LocationSearchDataItem
 import com.example.weatherapp.presentation.homeScreen.viewModels.WeatherViewModel
+import com.example.weatherapp.ui.theme.avenirFontFamily
 
 @Composable
 fun SearchView(viewModel: WeatherViewModel) {
@@ -83,7 +84,9 @@ fun SearchScreen(
             active = active,
             onSearch = { keyboardController?.hide() },
             placeholder = {
-                Text(text = stringResource(R.string.city_region_or_us_uk_zip_code), color = colorResource(id = R.color.search_icons))
+                Text(
+                    text = stringResource(R.string.city_region_or_us_uk_zip_code), color = colorResource(id = R.color.search_icons), fontFamily = avenirFontFamily
+                )
             },
             leadingIcon = {
                 Icon(
@@ -150,11 +153,18 @@ fun LocationListItem(
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
-//            .background(Color.White)
             .wrapContentHeight()
             .fillMaxWidth()
             .clickable { onItemSelected(location.name) }
     ) {
-        Text(text = location.name + ", " + location.region + ", " + location.country)
+        Text(
+            text = buildString {
+                append(location.name)
+                append(", ")
+                append(location.region)
+                append(", ")
+                append(location.country)
+            }, fontFamily = avenirFontFamily
+        )
     }
 }
