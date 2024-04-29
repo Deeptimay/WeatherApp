@@ -1,4 +1,4 @@
-package com.example.weatherapp.presentation.homeScreen
+package com.example.weatherapp.presentation.homeScreen.composeViews
 
 
 import android.os.Bundle
@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.weatherapp.R
+import com.example.weatherapp.presentation.homeScreen.viewModels.WeatherViewModel
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,7 +51,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     val weatherViewModel = hiltViewModel<WeatherViewModel>()
-    Column {
+    Column(
+        modifier = Modifier
+            .background(Color.White)
+    ) {
         TextView()
         SearchView(viewModel = weatherViewModel)
         CityListView(viewModel = weatherViewModel)

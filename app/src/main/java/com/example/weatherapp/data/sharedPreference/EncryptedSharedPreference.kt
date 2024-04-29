@@ -1,4 +1,4 @@
-package com.example.weatherapp.presentation.util
+package com.example.weatherapp.data.sharedPreference
 
 import android.content.Context
 import androidx.security.crypto.EncryptedFile

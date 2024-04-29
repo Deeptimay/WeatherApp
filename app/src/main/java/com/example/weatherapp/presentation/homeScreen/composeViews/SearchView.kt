@@ -1,4 +1,4 @@
-package com.example.weatherapp.presentation.homeScreen
+package com.example.weatherapp.presentation.homeScreen.composeViews
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.weatherapp.R
 import com.example.weatherapp.data.models.LocationSearchDataItem
+import com.example.weatherapp.presentation.homeScreen.viewModels.WeatherViewModel
 
 @Composable
 fun SearchView(viewModel: WeatherViewModel) {
@@ -112,7 +113,7 @@ fun SearchScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(16.dp),
                     modifier = Modifier
-                        .background(Color.White)
+//                        .background(Color.White)
                         .wrapContentHeight()
                         .fillMaxWidth()
                 ) {
@@ -124,6 +125,7 @@ fun SearchScreen(
                             LocationListItem(location = location, onItemSelected = {
                                 onSearchClicked(it)
                                 onSearchQueryChange("")
+                                active = false
                             })
                             Divider(
                                 color = colorResource(R.color.grey_divider), modifier = Modifier
@@ -148,7 +150,7 @@ fun LocationListItem(
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
-            .background(Color.White)
+//            .background(Color.White)
             .wrapContentHeight()
             .fillMaxWidth()
             .clickable { onItemSelected(location.name) }

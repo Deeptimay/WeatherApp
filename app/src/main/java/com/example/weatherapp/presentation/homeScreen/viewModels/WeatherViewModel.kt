@@ -1,4 +1,4 @@
-package com.example.weatherapp.presentation.homeScreen
+package com.example.weatherapp.presentation.homeScreen.viewModels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,7 +15,7 @@ import com.example.weatherapp.domain.useCasesImpl.GetCurrentWeather
 import com.example.weatherapp.domain.useCasesImpl.GetCurrentWeatherInBulk
 import com.example.weatherapp.domain.util.NetworkResult
 import com.example.weatherapp.presentation.ui.UiState
-import com.example.weatherapp.presentation.util.EncryptedSharedPreference
+import com.example.weatherapp.data.sharedPreference.EncryptedSharedPreference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -5,7 +5,7 @@
     <string name="show_more">Show more</string>
     <string name="search_for_a_city_or_us_uk_zip_to_check_the_weather">Search for a city or US/UK zip to check the weather</string>
     <string name="unknownhostexception">UnknownHostException</string>
-    <string name="please_check_your_internet">Please Check Your Internet</string>
+    <string name="please_check_your_internet">Please Check Your Internet Connection</string>
     <string name="loading_your_data">Loading Your Data</string>
     <string name="weather_app">Weather App</string>
     <string name="city_region_or_us_uk_zip_code">City, Region or US/UK zip code</string>

@@ -1,4 +1,4 @@
-package com.example.weatherapp.presentation.homeScreen
+package com.example.weatherapp.presentation.homeScreen.composeViews
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -15,20 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,71 +34,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.R
 import com.example.weatherapp.data.models.Bulk
-import com.example.weatherapp.data.models.FetchBulkData
-import com.example.weatherapp.presentation.ui.UiState
 import com.example.weatherapp.presentation.util.convert24HourTo12Hour
 import com.example.weatherapp.presentation.util.isDaytime
 
 @Composable
-fun CityListView(viewModel: WeatherViewModel) {
-    val responseData by viewModel.currentWeatherFlowInBulk.collectAsState()
-
-    when (responseData) {
-        is UiState.Error -> {
-            val errorData = responseData as? UiState.Error
-
-            if (errorData.toString().contains(stringResource(R.string.unknownhostexception))) {
-                EmptyState(stringResource(R.string.please_check_your_internet))
-                return
-            }
-
-            if (!viewModel.currentWeatherList.isNullOrEmpty())
-                EmptyState(errorData.toString())
-            else
-                EmptyState(stringResource(R.string.search_for_a_city_or_us_uk_zip_to_check_the_weather))
-        }
-
-        UiState.Loading -> {
-            EmptyState(stringResource(R.string.loading_your_data))
-        }
-
-        is UiState.Success<*> -> {
-            val successData = responseData as? UiState.Success<*>
-            val weatherCityListData = successData?.content as? FetchBulkData
-            if (weatherCityListData != null && !weatherCityListData.bulk.isNullOrEmpty()) {
-                weatherCityListData?.let { CityList(it.bulk, viewModel) }
-            } else {
-                EmptyState(stringResource(R.string.search_for_a_city_or_us_uk_zip_to_check_the_weather))
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun CityList(weatherData: List<Bulk>, viewModel: WeatherViewModel) {
-    LazyColumn(
-        modifier = Modifier
-            .padding(vertical = 4.dp)
-            .background(color = Color.White)
-    ) {
-        itemsIndexed(items = weatherData) { _, cityList ->
-            var expanded by remember { mutableStateOf(false) }
-            Card(
-                elevation = 0.dp,
-                backgroundColor = Color.White,
-                onClick = { expanded = !expanded },
-                content = {
-                    CityListItem(cityList, expanded) { viewModel.removeSwipedWeatherByCityController(it) }
-                }
-            )
-
-        }
-    }
-}
-
-@Composable
-fun CardContent(cityList: Bulk, expanded: Boolean) {
+fun SingleItemCardContent(cityList: Bulk, expanded: Boolean) {
 
     val localTime = cityList.query.location.localtime.split(" ")
     val timeIn12Hour = convert24HourTo12Hour(localTime[1])
@@ -145,9 +77,9 @@ fun CardContent(cityList: Bulk, expanded: Boolean) {
         cityList.query.current.condition.text.contains("Cloudy", ignoreCase = true) ||
                 cityList.query.current.condition.text.contains("Mist", ignoreCase = true) -> {
             if (isDay)
-                R.drawable.night_cloudy
-            else
                 R.drawable.day_cloudy
+            else
+                R.drawable.night_cloudy
         }
 
         cityList.query.current.condition.text.contains("showers", ignoreCase = true) -> {

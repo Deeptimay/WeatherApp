@@ -1,4 +1,4 @@
-package com.example.weatherapp.presentation.homeScreen
+package com.example.weatherapp.presentation.homeScreen.composeViews
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
@@ -22,7 +22,7 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CityListItem(
+fun CityListItemWrapper(
     cityList: Bulk, expanded: Boolean,
     onRemove: (Bulk) -> Unit
 ) {
@@ -46,7 +46,7 @@ fun CityListItem(
                 DismissBackground(dismissState)
             },
             dismissContent = {
-                CardContent(cityList, expanded)
+                SingleItemCardContent(cityList, expanded)
             },
             directions = setOf(DismissDirection.EndToStart)
         )
