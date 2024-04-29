@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,7 +50,7 @@ fun SearchView(viewModel: WeatherViewModel) {
         searchResults = searchResults,
         onSearchQueryChange = { viewModel.onSearchQueryChange(it) },
         onSearchClicked = {
-            viewModel.fetchCurrentWeatherByCityController(it)
+            viewModel.fetchCurrentWeatherOnCitySelectionController(it)
         }
     )
 }
@@ -77,7 +79,10 @@ fun SearchScreen(
                 .background(colorResource(id = R.color.search_bar), RoundedCornerShape(8.dp))
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp)),
-            colors = SearchBarDefaults.colors(containerColor = colorResource(id = R.color.search_bar), dividerColor = Color.Transparent),
+            colors = SearchBarDefaults.colors(
+                containerColor = colorResource(id = R.color.search_bar), dividerColor = Color.Transparent,
+                inputFieldColors = TextFieldDefaults.colors(cursorColor = Color.Black)
+            ),
             shape = RoundedCornerShape(8.dp),
             query = searchQuery,
             onQueryChange = onSearchQueryChange,
@@ -90,6 +95,7 @@ fun SearchScreen(
             },
             leadingIcon = {
                 Icon(
+                    modifier = Modifier.size(20.dp, 20.dp),
                     painter = painterResource(id = R.drawable.search),
                     contentDescription = stringResource(R.string.search_icon),
                     tint = colorResource(id = R.color.search_icons)
@@ -102,6 +108,7 @@ fun SearchScreen(
                         active = false
                     }) {
                         Icon(
+                            modifier = Modifier.size(20.dp, 20.dp),
                             painter = painterResource(id = R.drawable.close),
                             contentDescription = stringResource(R.string.clear_search),
                             tint = colorResource(id = R.color.search_icons)

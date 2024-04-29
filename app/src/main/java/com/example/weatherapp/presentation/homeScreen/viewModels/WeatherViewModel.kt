@@ -1,5 +1,6 @@
 package com.example.weatherapp.presentation.homeScreen.viewModels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -74,6 +75,7 @@ class WeatherViewModel @Inject constructor(
     private fun fetchCurrentWeatherByCityInBulk(bulkDataRequest: BulkDataRequest) {
         viewModelScope.launch {
             val response = getCurrentWeatherInBulk(bulkDataRequest)
+            onSearchQueryChange("")
             _currentWeatherFlowInBulk.update {
                 when (response) {
                     is NetworkResult.ApiError -> UiState.Error(response.errorData)
@@ -83,7 +85,7 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    fun fetchCurrentWeatherByCityController(location: String) {
+    fun fetchCurrentWeatherOnCitySelectionController(location: String) {
         onSearchQueryChange("")
         val locationList = listOf(LocationBulk(location, System.currentTimeMillis().toString()))
         val placePreferenceData = fetchSavedCityListFromSharedPreferences()
@@ -93,6 +95,7 @@ class WeatherViewModel @Inject constructor(
 
         updateCityListToSharedPreferences(currentWeatherList)
         fetchCurrentWeatherByCityInBulk(bulkDataRequest)
+        Log.d("currentWeatherList Add", currentWeatherList.size.toString())
     }
 
     fun removeSwipedWeatherByCityController(bulk: Bulk) {
@@ -102,6 +105,7 @@ class WeatherViewModel @Inject constructor(
 
         currentWeatherList = placePreferenceDataMutable
         updateCityListToSharedPreferences(placePreferenceDataMutable)
+        Log.d("currentWeatherList Delete", currentWeatherList.size.toString())
     }
 
     fun onSearchQueryChange(newQuery: String) {

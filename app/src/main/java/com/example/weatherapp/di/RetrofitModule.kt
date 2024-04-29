@@ -78,5 +78,5 @@ object RetrofitModule {
 
     @Provides
     @Named("apiKey")
-    fun provideApiKey(): String = "49da1d8909b242dbbc9131508242304"
+    fun provideApiKey(): String = "aefd795f848f4f11b30174104242904"
 }

@@ -157,7 +157,7 @@ fun SingleItemCardContent(cityList: Bulk) {
                     )
                     Image(
                         modifier = Modifier
-                            .size(width = 30.dp, height = 30.dp)
+                            .size(width = 22.dp, height = 22.dp)
                             .padding(start = 5.dp),
                         painter = painterResource(id = id),
                         contentDescription = stringResource(R.string.weather_condition)
