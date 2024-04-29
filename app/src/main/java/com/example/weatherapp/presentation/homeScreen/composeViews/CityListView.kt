@@ -3,15 +3,10 @@ package com.example.weatherapp.presentation.homeScreen.composeViews
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -35,7 +30,7 @@ fun CityListView(viewModel: WeatherViewModel) {
                 return
             }
 
-            if (!viewModel.currentWeatherList.isNullOrEmpty())
+            if (viewModel.currentWeatherList.isNotEmpty())
                 EmptyState(errorData.toString())
             else
                 EmptyState(stringResource(R.string.search_for_a_city_or_us_uk_zip_to_check_the_weather))
@@ -48,8 +43,8 @@ fun CityListView(viewModel: WeatherViewModel) {
         is UiState.Success<*> -> {
             val successData = responseData as? UiState.Success<*>
             val weatherCityListData = successData?.content as? FetchBulkData
-            if (weatherCityListData != null && !weatherCityListData.bulk.isNullOrEmpty()) {
-                weatherCityListData?.let { CityList(it.bulk, viewModel) }
+            if (weatherCityListData != null && weatherCityListData.bulk.isNotEmpty()) {
+                CityList(weatherCityListData.bulk, viewModel)
             } else {
                 EmptyState(stringResource(R.string.search_for_a_city_or_us_uk_zip_to_check_the_weather))
             }
@@ -57,24 +52,18 @@ fun CityListView(viewModel: WeatherViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CityList(weatherData: List<Bulk>, viewModel: WeatherViewModel) {
+
     LazyColumn(
         modifier = Modifier
             .padding(vertical = 4.dp)
             .background(color = Color.White)
     ) {
-        itemsIndexed(items = weatherData) { _, cityList ->
-            var expanded by remember { mutableStateOf(false) }
-            Card(
-                elevation = 0.dp,
-                backgroundColor = Color.White,
-                onClick = { expanded = !expanded },
-                content = {
-                    CityListItemWrapper(cityList, expanded) { viewModel.removeSwipedWeatherByCityController(it) }
-                }
-            )
-        }
+        items(
+            items = weatherData,
+            itemContent = { rowItem ->
+                CityListItemWrapper(rowItem) { deleted -> viewModel.removeSwipedWeatherByCityController(deleted) }
+            })
     }
 }

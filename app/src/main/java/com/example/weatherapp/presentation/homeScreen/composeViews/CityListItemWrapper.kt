@@ -23,7 +23,7 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CityListItemWrapper(
-    cityList: Bulk, expanded: Boolean,
+    cityList: Bulk,
     onRemove: (Bulk) -> Unit
 ) {
     var show by remember { mutableStateOf(true) }
@@ -46,7 +46,7 @@ fun CityListItemWrapper(
                 DismissBackground(dismissState)
             },
             dismissContent = {
-                SingleItemCardContent(cityList, expanded)
+                SingleItemCardContent(cityList)
             },
             directions = setOf(DismissDirection.EndToStart)
         )

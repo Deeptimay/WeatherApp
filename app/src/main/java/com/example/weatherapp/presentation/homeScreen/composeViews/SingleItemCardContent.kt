@@ -12,9 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,9 +34,11 @@ import com.example.weatherapp.data.models.Bulk
 import com.example.weatherapp.presentation.util.convert24HourTo12Hour
 import com.example.weatherapp.presentation.util.isDaytime
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SingleItemCardContent(cityList: Bulk, expanded: Boolean) {
+fun SingleItemCardContent(cityList: Bulk) {
 
+    var expanded by remember { mutableStateOf(false) }
     val localTime = cityList.query.location.localtime.split(" ")
     val timeIn12Hour = convert24HourTo12Hour(localTime[1])
     val isDay = isDaytime(localTime[1])
@@ -86,19 +94,19 @@ fun SingleItemCardContent(cityList: Bulk, expanded: Boolean) {
             R.drawable.night
     }
 
-    Row(
+    Card(
+        elevation = 0.dp,
+        backgroundColor = Color.White,
         modifier = Modifier
             .animateContentSize(
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioHighBouncy,
                     stiffness = Spring.StiffnessHigh
                 )
-            )
+            ),
+        onClick = { expanded = !expanded },
     ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-        ) {
+        Column {
             Box(
                 Modifier
                     .background(Color.White)

@@ -99,8 +99,6 @@ class WeatherViewModel @Inject constructor(
 
         currentWeatherList = placePreferenceDataMutable
         updateCityListToSharedPreferences(placePreferenceDataMutable)
-
-        fetchAllLocationWeatherInBulk()
     }
 
     fun onSearchQueryChange(newQuery: String) {
