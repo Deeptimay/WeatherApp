@@ -10,12 +10,13 @@ import com.example.weatherapp.data.models.BulkDataRequest
 import com.example.weatherapp.data.models.Location
 import com.example.weatherapp.data.models.LocationBulk
 import com.example.weatherapp.data.models.LocationSearchData
+import com.example.weatherapp.domain.useCasesImpl.FetchSavedCityListFromSharedPreferences
 import com.example.weatherapp.domain.useCasesImpl.GetAllLocationSuggestions
 import com.example.weatherapp.domain.useCasesImpl.GetCurrentWeather
 import com.example.weatherapp.domain.useCasesImpl.GetCurrentWeatherInBulk
+import com.example.weatherapp.domain.useCasesImpl.UpdateCityListToSharedPreferences
 import com.example.weatherapp.domain.util.NetworkResult
 import com.example.weatherapp.presentation.ui.UiState
-import com.example.weatherapp.data.sharedPreference.EncryptedSharedPreference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +30,8 @@ class WeatherViewModel @Inject constructor(
     private val getAllLocationSuggestions: GetAllLocationSuggestions,
     private val getCurrentWeather: GetCurrentWeather,
     private val getCurrentWeatherInBulk: GetCurrentWeatherInBulk,
-    private val encryptedSharedPreference: EncryptedSharedPreference
+    private val fetchSavedCityListFromSharedPreferences: FetchSavedCityListFromSharedPreferences,
+    private val updateCityListToSharedPreferences: UpdateCityListToSharedPreferences
 ) : ViewModel() {
 
     var searchQuery by mutableStateOf("")
@@ -53,7 +55,7 @@ class WeatherViewModel @Inject constructor(
     val showProgressBar: StateFlow<Boolean> = _showProgressBar.asStateFlow()
 
     init {
-        currentWeatherList = encryptedSharedPreference.retrieveMyPreferredLocations()
+        currentWeatherList = fetchSavedCityListFromSharedPreferences()
         val bulkDataRequest = BulkDataRequest(currentWeatherList)
         fetchCurrentWeatherByCityInBulk(bulkDataRequest)
     }
@@ -98,20 +100,20 @@ class WeatherViewModel @Inject constructor(
     fun fetchCurrentWeatherByCityController(location: String) {
         onSearchQueryChange("")
         val locationList = listOf(LocationBulk(location, System.currentTimeMillis().toString()))
-        val placePreferenceData = encryptedSharedPreference.retrieveMyPreferredLocations()
+        val placePreferenceData = fetchSavedCityListFromSharedPreferences()
 
         currentWeatherList = locationList.plus(placePreferenceData)
         val bulkDataRequest = BulkDataRequest(currentWeatherList)
 
-        encryptedSharedPreference.saveMyPreferredLocations(currentWeatherList)
+        updateCityListToSharedPreferences(currentWeatherList)
         fetchCurrentWeatherByCityInBulk(bulkDataRequest)
     }
 
     fun removeSwipedWeatherByCityController(bulk: Bulk) {
-        val placePreferenceData = encryptedSharedPreference.retrieveMyPreferredLocations()
+        val placePreferenceData = fetchSavedCityListFromSharedPreferences()
         val placePreferenceDataMutable = placePreferenceData.toMutableList()
         placePreferenceDataMutable.removeIf { it.custom_id == bulk.query.custom_id }
-        encryptedSharedPreference.saveMyPreferredLocations(placePreferenceDataMutable)
+        updateCityListToSharedPreferences(placePreferenceDataMutable)
     }
 
     fun onSearchQueryChange(newQuery: String) {

@@ -1,7 +1,6 @@
 package com.example.weatherapp.data.sharedPreference
 
 import android.content.Context
-import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.example.weatherapp.data.models.LocationBulk
@@ -11,7 +10,6 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import java.io.File
 import javax.inject.Inject
 
 
@@ -61,18 +59,6 @@ class EncryptedSharedPreference @Inject constructor(@ApplicationContext appConte
             Long::class -> sharedPreferences.getLong(key, defaultValue as? Long ?: -1) as T?
             else -> throw UnsupportedOperationException("Not yet implemented")
         }
-    }
-
-    private val encryptedFile by lazy {
-        val baseDir = appContext.filesDir
-        val fileToWrite = File(baseDir, "encrypted-file.txt")
-
-        EncryptedFile.Builder(
-            fileToWrite,
-            appContext,
-            mainKeyAlias,
-            EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-        ).build()
     }
 
     fun saveMyPreferredLocations(myObjects: List<LocationBulk>) {
