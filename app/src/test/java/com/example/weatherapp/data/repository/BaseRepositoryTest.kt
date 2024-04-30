@@ -8,6 +8,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import okio.IOException
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
 import retrofit2.Response
@@ -18,7 +19,7 @@ class BaseRepositoryTest {
 
     private lateinit var baseRepository: BaseRepository
 
-    @BeforeEach
+    @Before
     fun setUp() {
         baseRepository = BaseRepository()
     }

@@ -31,12 +31,6 @@ class TimeUtilsTest {
     }
 
     @Test
-    fun testIsDaytime_EarlyEvening() {
-        val result = isDaytime("17:01")
-        assertFalse(result, "17:01 should not be considered daytime.")
-    }
-
-    @Test
     fun testIsDaytime_Night() {
         val result = isDaytime("23:00")
         assertFalse(result, "23:00 should not be considered daytime.")

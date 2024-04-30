@@ -1,27 +1,35 @@
 package com.example.weatherapp.presentation.homeScreen.viewModels
 
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.weatherapp.data.models.Bulk
+import com.example.weatherapp.data.models.BulkDataRequest
+import com.example.weatherapp.data.models.Current
+import com.example.weatherapp.data.models.CurrentWeatherData
 import com.example.weatherapp.data.models.FetchBulkData
+import com.example.weatherapp.data.models.Location
 import com.example.weatherapp.data.models.LocationBulk
 import com.example.weatherapp.data.models.LocationSearchDataItem
+import com.example.weatherapp.data.models.Query
 import com.example.weatherapp.domain.useCasesImpl.FetchSavedCityListFromSharedPreferences
 import com.example.weatherapp.domain.useCasesImpl.GetAllLocationSuggestions
 import com.example.weatherapp.domain.useCasesImpl.GetCurrentWeatherInBulk
 import com.example.weatherapp.domain.useCasesImpl.UpdateCityListToSharedPreferences
+import com.example.weatherapp.domain.util.ErrorTypes
 import com.example.weatherapp.domain.util.NetworkResult
 import com.example.weatherapp.presentation.ui.UiState
-import io.mockk.coEvery
-import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
+import com.example.weatherapp.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertEquals
+import org.mockito.Mock
+import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.mock
 
 @ExperimentalCoroutinesApi
 class WeatherViewModelTest {
@@ -29,17 +37,26 @@ class WeatherViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     private lateinit var viewModel: WeatherViewModel
-    private val getAllLocationSuggestions: GetAllLocationSuggestions = mockk()
-    private val getCurrentWeatherInBulk: GetCurrentWeatherInBulk = mockk()
-    private val fetchSavedCityListFromSharedPreferences: FetchSavedCityListFromSharedPreferences = mockk()
-    private val updateCityListToSharedPreferences: UpdateCityListToSharedPreferences = mockk()
+
+    @Mock
+    private var getAllLocationSuggestions: GetAllLocationSuggestions = mock()
+
+    @Mock
+    private var getCurrentWeatherInBulk: GetCurrentWeatherInBulk = mock()
+
+    @Mock
+    private var fetchSavedCityListFromSharedPreferences: FetchSavedCityListFromSharedPreferences = mock()
+
+    @Mock
+    private var updateCityListToSharedPreferences: UpdateCityListToSharedPreferences = mock()
 
     @Before
     fun setUp() {
-        Dispatchers.setMain(Dispatchers.Unconfined)  // Set the main dispatcher to unconfined for testing
-
-        // Initialize the ViewModel with mocked use cases
+        MockitoAnnotations.openMocks(this)
         viewModel = WeatherViewModel(
             getAllLocationSuggestions,
             getCurrentWeatherInBulk,
@@ -49,27 +66,73 @@ class WeatherViewModelTest {
     }
 
     @Test
-    fun `fetchAllLocationWeatherInBulk updates currentWeatherFlowInBulk with success when list is not empty`(): Nothing = runBlocking {
-        val mockList = listOf(LocationBulk("New York"))
-        coEvery { fetchSavedCityListFromSharedPreferences.invoke() } returns mockList
-        coEvery { getCurrentWeatherInBulk.invoke(any()) } returns NetworkResult.ApiSuccess(FetchBulkData(listOf(Bulk())))
+    fun `fetchCurrentWeatherByCityInBulk success`() = runTest {
+        `when`(getCurrentWeatherInBulk(bulkDataRequest)).thenReturn(fetchBulkDataNetworkResult)
 
-        viewModel.currentWeatherFlowInBulk.collect { state ->
-            when (state) {
-                is UiState.Success<*> -> assertEquals(FetchBulkData(listOf(Bulk())), state.content as? FetchBulkData)
-                is UiState.Error -> assert(false)  // Should not reach here
-                UiState.Loading -> {}
-            }
-        }
+        viewModel.fetchCurrentWeatherByCityInBulk(bulkDataRequest)
+        delay(100)
+
+        val result = viewModel.currentWeatherFlowInBulk.value
+        assertEquals(UiState.Success(expectedResponseFetchBulkData), result)
     }
 
     @Test
-    fun `fetchAllLocationSuggestions updates locationFlow on valid query`() = runBlocking {
-        val mockResult = arrayListOf(LocationSearchDataItem("New York"))
-        coEvery { getAllLocationSuggestions.invoke("NY") } returns NetworkResult.ApiSuccess(mockResult)
+    fun `getRepoList API error`() = runTest {
+        `when`(getCurrentWeatherInBulk(bulkDataRequest)).thenReturn(fetchBulkDataNetworkResultError)
 
-        viewModel.onSearchQueryChange("NY")
+        viewModel.fetchCurrentWeatherByCityInBulk(bulkDataRequest)
+        delay(100)
 
-        assertEquals(mockResult, viewModel.locationFlow.first())
+        // Then repoDetailsFlow should emit an Error state
+        val result = viewModel.currentWeatherFlowInBulk.value
+        assert(result is UiState.Error)
+    }
+
+    @Test
+    fun `getRepoList API exception`() = runTest {
+        `when`(getCurrentWeatherInBulk(bulkDataRequest)).thenReturn(fetchBulkDataNetworkResultException)
+
+        viewModel.fetchCurrentWeatherByCityInBulk(bulkDataRequest)
+        delay(100)
+
+        val result = viewModel.currentWeatherFlowInBulk.value
+        assert(result is UiState.Error)
+    }
+
+    @Test
+    fun `fetchAllLocationSuggestions success`() = runTest {
+        `when`(getAllLocationSuggestions(queryString)).thenReturn(locationSearchDataItemNetworkResult)
+
+        viewModel.fetchAllLocationSuggestions(queryString)
+        delay(100)
+
+        val result = viewModel.locationFlow.value
+        assertEquals(expectedResponseLocationSearchDataItemArraylist, result)
+    }
+
+
+    companion object {
+        val queryString = "Bangalore"
+        val expectedResponseCurrentWeatherData = CurrentWeatherData(current = Current(), location = Location(name = "Bangalore"))
+
+        val locationSearchDataItem = listOf(LocationBulk(q = "Bangalore"))
+
+        val expectedResponseLocationSearchDataItemArraylist = arrayListOf(LocationSearchDataItem(name = "Bangalore"))
+
+        val locationList = listOf(LocationBulk(q = "Bangalore"))
+
+        val bulkDataRequest = BulkDataRequest(locationList)
+        val expectedResponseFetchBulkData = FetchBulkData(listOf(Bulk(Query(q = "Bangalore"))))
+
+        val fetchBulkDataNetworkResult = NetworkResult.ApiSuccess(expectedResponseFetchBulkData)
+        val locationSearchDataItemNetworkResult = NetworkResult.ApiSuccess(expectedResponseLocationSearchDataItemArraylist)
+
+        val fetchBulkDataNetworkResultError = NetworkResult.ApiError<FetchBulkData>(
+            ErrorTypes.ServerError(code = 400, internalMessage = "CustomError")
+
+        )
+        val fetchBulkDataNetworkResultException = NetworkResult.ApiError<FetchBulkData>(
+            ErrorTypes.ExceptionError(Exception("CustomError"))
+        )
     }
 }

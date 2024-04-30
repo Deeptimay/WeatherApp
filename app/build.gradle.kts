@@ -120,7 +120,7 @@ dependencies {
     kapt(libs.hilt.android.compiler)
 
     // testing
-//    testImplementation("junit:junit:4.13.2")
+    testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("com.android.support.test:rules:1.0.2")
     androidTestImplementation("com.android.support.test:runner:1.0.2")
@@ -144,7 +144,6 @@ dependencies {
     testRuntimeOnly(libs.junit.jupiter.engine)
     testImplementation(libs.mockwebserver)
     implementation(libs.converter.moshi)
-    implementation(libs.retrofit2.kotlin.coroutines.adapter)
     implementation(libs.robolectric)
     implementation(libs.androidx.core)
 }

@@ -34,10 +34,10 @@ class BaseRepository @Inject constructor() {
             }
         } catch (e: HttpException) {
             NetworkResult.ApiError(ErrorTypes.HttpExceptionError(e))
-        } catch (e: IOException) {
-            NetworkResult.ApiError(ErrorTypes.IOExceptionError(e))
         } catch (e: SocketTimeoutException) {
             NetworkResult.ApiError(ErrorTypes.TimeoutError(e))
+        } catch (e: IOException) {
+            NetworkResult.ApiError(ErrorTypes.IOExceptionError(e))
         } catch (e: Throwable) {
             NetworkResult.ApiError(ErrorTypes.ExceptionError(e))
         }

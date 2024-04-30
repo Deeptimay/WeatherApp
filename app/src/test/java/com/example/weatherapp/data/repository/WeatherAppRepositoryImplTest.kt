@@ -1,5 +1,6 @@
 package com.example.weatherapp.data.repository
 
+import com.example.weatherapp.data.models.Bulk
 import com.example.weatherapp.data.models.BulkDataRequest
 import com.example.weatherapp.data.models.Current
 import com.example.weatherapp.data.models.CurrentWeatherData
@@ -7,73 +8,93 @@ import com.example.weatherapp.data.models.FetchBulkData
 import com.example.weatherapp.data.models.Location
 import com.example.weatherapp.data.models.LocationBulk
 import com.example.weatherapp.data.models.LocationSearchDataItem
+import com.example.weatherapp.data.models.Query
 import com.example.weatherapp.data.network.WeatherAppApi
 import com.example.weatherapp.data.sharedPreference.EncryptedSharedPreference
+import com.example.weatherapp.domain.util.ErrorTypes
 import com.example.weatherapp.domain.util.NetworkResult
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
-import kotlinx.coroutines.runBlocking
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
+import retrofit2.Response
 import kotlin.test.assertEquals
 
 class WeatherAppRepositoryImplTest {
 
-    @Mock
     private lateinit var baseRepository: BaseRepository
-
-    @Mock
     private lateinit var weatherAppApi: WeatherAppApi
-
-    @Mock
     private lateinit var encryptedSharedPreference: EncryptedSharedPreference
-
+    private lateinit var repository: WeatherAppRepositoryImpl
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        baseRepository = mockk(relaxed = true)
+        weatherAppApi = mockk(relaxed = true)
+        encryptedSharedPreference = mockk(relaxed = true)
         repository = WeatherAppRepositoryImpl(baseRepository, weatherAppApi, encryptedSharedPreference)
     }
 
     @Test
-    fun `fetchAllLocationList returns locations on successful API call`() = runBlocking {
+    fun `fetchAllLocationList calls API and returns result`() = runBlockingTest {
 
-        whenever(baseRepository.performApiCall<ArrayList<LocationSearchDataItem>>(any())).thenReturn(expectedResultLocationSearch)
+        coEvery { weatherAppApi.locationAutoComplete(queryString) } returns Response.success(expectedResponseLocationSearchDataItemArraylist)
+        coEvery { baseRepository.performApiCall<ArrayList<LocationSearchDataItem>>(any()) } coAnswers {
+            val apiCall = firstArg<suspend () -> Response<ArrayList<LocationSearchDataItem>>>()
+            val response = apiCall.invoke()
+            if (response.isSuccessful) NetworkResult.ApiSuccess(response.body()!!) else NetworkResult.ApiError(
+                ErrorTypes.CustomError(code = response.code(), internalMessage = response.message())
+            )
+        }
 
         val result = repository.fetchAllLocationList(queryString)
 
-        verify(weatherAppApi).locationAutoComplete(queryString)
-        assertEquals(expectedResultLocationSearch, result)
+        assertEquals(expectedResponseLocationSearchDataItemArraylist, (result as NetworkResult.ApiSuccess<*>).data)
+        coVerify(exactly = 1) { weatherAppApi.locationAutoComplete(queryString) }
     }
 
     @Test
-    fun `fetchCurrentWeatherData returns weather data on successful API call`() = runBlocking {
+    fun `fetchCurrentWeatherData calls API and returns result`() = runBlockingTest {
 
-        whenever(baseRepository.performApiCall<CurrentWeatherData>(any())).thenReturn(expectedResult)
+        coEvery { weatherAppApi.getCurrentWeather(queryString) } returns Response.success(expectedResponseCurrentWeatherData)
+        coEvery { baseRepository.performApiCall<CurrentWeatherData>(any()) } coAnswers {
+            val apiCall = firstArg<suspend () -> Response<CurrentWeatherData>>()
+            val response = apiCall.invoke()
+            if (response.isSuccessful) NetworkResult.ApiSuccess(response.body()!!) else NetworkResult.ApiError(
+                ErrorTypes.CustomError(code = response.code(), internalMessage = response.message())
+            )
+        }
 
-        val result = repository.fetchCurrentWeatherData(location)
+        val result = repository.fetchCurrentWeatherData(queryString)
 
-        verify(weatherAppApi).getCurrentWeather(location)
-        assertEquals(expectedResult, result)
+        assertEquals(expectedResponseCurrentWeatherData, (result as NetworkResult.ApiSuccess<*>).data)
+        coVerify(exactly = 1) { weatherAppApi.getCurrentWeather(queryString) }
     }
 
     @Test
-    fun `fetchCurrentWeatherDataInBulk returns bulk weather data on successful API call`() = runBlocking {
+    fun `fetchCurrentWeatherDataInBulk calls API and returns result`() = runBlockingTest {
 
-        whenever(baseRepository.performApiCall<FetchBulkData>(any())).thenReturn(expectedResultBulk)
+        coEvery { weatherAppApi.getCurrentWeatherInBulk(bulkDataRequest) } returns Response.success(expectedResponseFetchBulkData)
+        coEvery { baseRepository.performApiCall<FetchBulkData>(any()) } coAnswers {
+            val apiCall = firstArg<suspend () -> Response<FetchBulkData>>()
+            val response = apiCall.invoke()
+            if (response.isSuccessful) NetworkResult.ApiSuccess(response.body()!!) else NetworkResult.ApiError(
+                ErrorTypes.CustomError(code = response.code(), internalMessage = response.message())
+            )
+        }
 
-        val result = repository.fetchCurrentWeatherDataInBulk(bulkRequest)
+        val result = repository.fetchCurrentWeatherDataInBulk(bulkDataRequest)
 
-        verify(weatherAppApi).getCurrentWeatherInBulk(bulkRequest)
-        assertEquals(expectedResultBulk, result)
+        assertEquals(expectedResponseFetchBulkData, (result as NetworkResult.ApiSuccess<*>).data)
+        coVerify(exactly = 1) { weatherAppApi.getCurrentWeatherInBulk(bulkDataRequest) }
     }
 
     @Test
-    fun `fetchSavedCityListFromSharedPreferences returns list of saved cities`() {
-        whenever(encryptedSharedPreference.retrieveMyPreferredLocations()).thenReturn(expectedList)
+    fun `fetchSavedCityListFromSharedPreferences retrieves data correctly`() {
+        val expectedList = listOf(LocationBulk("New York"))
+        coEvery { encryptedSharedPreference.retrieveMyPreferredLocations() } returns expectedList
 
         val result = repository.fetchSavedCityListFromSharedPreferences()
 
@@ -81,25 +102,21 @@ class WeatherAppRepositoryImplTest {
     }
 
     @Test
-    fun `updateCityListToSharedPreferences saves list of cities`() {
+    fun `updateCityListToSharedPreferences saves data correctly`() {
+        val locationList = listOf(LocationBulk("San Francisco"))
 
-        repository.updateCityListToSharedPreferences(cityList)
+        repository.updateCityListToSharedPreferences(locationList)
 
-        verify(encryptedSharedPreference).saveMyPreferredLocations(cityList)
+        coVerify { encryptedSharedPreference.saveMyPreferredLocations(locationList) }
     }
 
     companion object {
-
-        private lateinit var repository: WeatherAppRepositoryImpl
-
-        val location = "Bangalore"
-        val expectedResult = NetworkResult.ApiSuccess(CurrentWeatherData(current = Current(), location = Location()))
-        val bulkRequest = BulkDataRequest(listOf(LocationBulk()))
-        val expectedResultBulk = NetworkResult.ApiSuccess(FetchBulkData(listOf()))
-        val expectedList = listOf(LocationBulk("Bangalore"), LocationBulk("Bangalore"))
-
-        val cityList = listOf(LocationBulk("Bangalore"), LocationBulk("Bangalore"))
         val queryString = "Bangalore"
-        val expectedResultLocationSearch = NetworkResult.ApiSuccess(ArrayList<LocationSearchDataItem>(listOf()))
+        val expectedResponseCurrentWeatherData = CurrentWeatherData(current = Current(), location = Location(name = "Bangalore"))
+
+        val expectedResponseLocationSearchDataItemArraylist = arrayListOf(LocationSearchDataItem(name = "Bangalore"))
+
+        val bulkDataRequest = BulkDataRequest(listOf(LocationBulk(q = "Bangalore")))
+        val expectedResponseFetchBulkData = FetchBulkData(listOf(Bulk(Query(q = "Bangalore"))))
     }
 }

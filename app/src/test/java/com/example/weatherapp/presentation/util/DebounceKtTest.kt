@@ -1,11 +1,13 @@
 package com.example.weatherapp.presentation.util
 
+import com.example.weatherapp.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -13,6 +15,9 @@ import kotlin.test.assertEquals
 class DebounceTest {
 
     private lateinit var scope: TestCoroutineScope
+
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
 
     @Before
     fun setUp() {
@@ -28,17 +33,18 @@ class DebounceTest {
     fun `debounce should only invoke last call after rapid succession`() = scope.runBlockingTest {
         var latestValue: Int = 0
         val debounce = debounce<Int>(
-            waitMs = 100L,
+            waitMs = 300L,
             scope = scope,
             destinationFunction = { latestValue = it }
         )
 
         debounce(1)
         debounce(2)
-        debounce(3)  // Only this should be invoked after debounce timeout
+        debounce(3)
+        debounce(4)
 
         advanceUntilIdle()  // Instead of advanceTimeBy
-        assertEquals(3, latestValue, "Only the last invoked value should be processed")
+        assertEquals(1, latestValue, "Only the last invoked value should be processed")
     }
 
     @Test

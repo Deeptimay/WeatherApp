@@ -27,9 +27,9 @@ import javax.inject.Inject
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
     private val getAllLocationSuggestions: GetAllLocationSuggestions,
-    private val getCurrentWeatherInBulk: GetCurrentWeatherInBulk,
+    val getCurrentWeatherInBulk: GetCurrentWeatherInBulk,
     private val fetchSavedCityListFromSharedPreferences: FetchSavedCityListFromSharedPreferences,
-    private val updateCityListToSharedPreferences: UpdateCityListToSharedPreferences
+    val updateCityListToSharedPreferences: UpdateCityListToSharedPreferences
 ) : ViewModel() {
 
     val debounceTextChange = debounce<String>(500L, viewModelScope) { fetchAllLocationSuggestions(it) }
@@ -49,7 +49,7 @@ class WeatherViewModel @Inject constructor(
         fetchAllLocationWeatherInBulk()
     }
 
-    private fun fetchAllLocationWeatherInBulk() {
+    fun fetchAllLocationWeatherInBulk() {
         currentWeatherList = fetchSavedCityListFromSharedPreferences()
         if (currentWeatherList.isEmpty()) {
             _currentWeatherFlowInBulk.update { UiState.Success("") }
@@ -59,7 +59,7 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    private fun fetchAllLocationSuggestions(query: String) {
+    fun fetchAllLocationSuggestions(query: String) {
         viewModelScope.launch {
             val response = getAllLocationSuggestions(query)
             _locationFlow.update {
@@ -71,7 +71,7 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    private fun fetchCurrentWeatherByCityInBulk(bulkDataRequest: BulkDataRequest) {
+    fun fetchCurrentWeatherByCityInBulk(bulkDataRequest: BulkDataRequest) {
         viewModelScope.launch {
             val response = getCurrentWeatherInBulk(bulkDataRequest)
             onSearchQueryChange("")
