@@ -1,6 +1,5 @@
 package com.example.weatherapp.presentation.homeScreen.viewModels
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.data.models.Bulk
 import com.example.weatherapp.data.models.BulkDataRequest
 import com.example.weatherapp.data.models.LocationBulk
-import com.example.weatherapp.data.models.LocationSearchData
+import com.example.weatherapp.data.models.LocationSearchDataItem
 import com.example.weatherapp.domain.useCasesImpl.FetchSavedCityListFromSharedPreferences
 import com.example.weatherapp.domain.useCasesImpl.GetAllLocationSuggestions
 import com.example.weatherapp.domain.useCasesImpl.GetCurrentWeatherInBulk
@@ -40,8 +39,8 @@ class WeatherViewModel @Inject constructor(
 
     var currentWeatherList: List<LocationBulk> = listOf()
 
-    private val _locationFlow = MutableStateFlow<LocationSearchData>(LocationSearchData())
-    val locationFlow: StateFlow<LocationSearchData> = _locationFlow.asStateFlow()
+    private val _locationFlow = MutableStateFlow<ArrayList<LocationSearchDataItem>>(ArrayList<LocationSearchDataItem>())
+    val locationFlow: StateFlow<ArrayList<LocationSearchDataItem>> = _locationFlow.asStateFlow()
 
     private val _currentWeatherFlowInBulk = MutableStateFlow<UiState>(UiState.Loading)
     val currentWeatherFlowInBulk: StateFlow<UiState> = _currentWeatherFlowInBulk.asStateFlow()
@@ -65,7 +64,7 @@ class WeatherViewModel @Inject constructor(
             val response = getAllLocationSuggestions(query)
             _locationFlow.update {
                 when (response) {
-                    is NetworkResult.ApiError -> LocationSearchData()
+                    is NetworkResult.ApiError -> ArrayList<LocationSearchDataItem>()
                     is NetworkResult.ApiSuccess -> response.data
                 }
             }
@@ -95,7 +94,6 @@ class WeatherViewModel @Inject constructor(
 
         updateCityListToSharedPreferences(currentWeatherList)
         fetchCurrentWeatherByCityInBulk(bulkDataRequest)
-        Log.d("currentWeatherList Add", currentWeatherList.size.toString())
     }
 
     fun removeSwipedWeatherByCityController(bulk: Bulk) {
@@ -105,7 +103,6 @@ class WeatherViewModel @Inject constructor(
 
         currentWeatherList = placePreferenceDataMutable
         updateCityListToSharedPreferences(placePreferenceDataMutable)
-        Log.d("currentWeatherList Delete", currentWeatherList.size.toString())
     }
 
     fun onSearchQueryChange(newQuery: String) {
@@ -113,6 +110,6 @@ class WeatherViewModel @Inject constructor(
         if (newQuery.isNotEmpty())
             debounceTextChange(searchQuery)
         else
-            _locationFlow.value = LocationSearchData()
+            _locationFlow.value = ArrayList<LocationSearchDataItem>()
     }
 }

@@ -1,62 +1,61 @@
 package com.example.weatherapp.data.models
 
-class LocationSearchData : ArrayList<LocationSearchDataItem>()
 data class BulkDataRequest(
-    val locations: List<LocationBulk>
+    val locations: List<LocationBulk> = listOf()
 )
 
 data class LocationBulk(
-    val q: String,
-    val custom_id: String
+    val q: String = "",
+    val custom_id: String = ""
 )
 
 data class FetchBulkData(val bulk: List<Bulk>)
 
 data class LocationSearchDataItem(
-    val country: String,
-    val id: Int,
-    val lat: Double,
-    val lon: Double,
-    val name: String,
-    val region: String,
-    val url: String
+    val country: String = "",
+    val id: Int = 0,
+    val lat: Double = 0.0,
+    val lon: Double = 0.0,
+    val name: String = "",
+    val region: String = "",
+    val url: String = ""
 )
 
 data class Bulk(
-    val query: Query
+    val query: Query = Query()
 )
 
 data class Query(
-    val current: Current,
-    val custom_id: String,
-    val location: Location,
-    val q: String
+    val current: Current = Current(),
+    val custom_id: String = "",
+    val location: Location = Location(),
+    val q: String = ""
 )
 
 data class Current(
-    val cloud: Int,
-    val condition: Condition,
-    val feelslike_c: Double,
-    val feelslike_f: Double,
-    val gust_kph: Double,
-    val gust_mph: Double,
-    val humidity: Int,
-    val is_day: Int,
-    val last_updated: String,
-    val last_updated_epoch: Int,
-    val precip_in: Double,
-    val precip_mm: Double,
-    val pressure_in: Double,
-    val pressure_mb: Double,
-    val temp_c: Double,
-    val temp_f: Double,
-    val uv: Double,
-    val vis_km: Double,
-    val vis_miles: Double,
-    val wind_degree: Int,
-    val wind_dir: String,
-    val wind_kph: Double,
-    val wind_mph: Double
+    val cloud: Int = 0,
+    val condition: Condition = Condition(),
+    val feelslike_c: Double = 0.0,
+    val feelslike_f: Double = 0.0,
+    val gust_kph: Double = 0.0,
+    val gust_mph: Double = 0.0,
+    val humidity: Int = 0,
+    val is_day: Int = 0,
+    val last_updated: String = "",
+    val last_updated_epoch: Int = 0,
+    val precip_in: Double = 0.0,
+    val precip_mm: Double = 0.0,
+    val pressure_in: Double = 0.0,
+    val pressure_mb: Double = 0.0,
+    val temp_c: Double = 0.0,
+    val temp_f: Double = 0.0,
+    val uv: Double = 0.0,
+    val vis_km: Double = 0.0,
+    val vis_miles: Double = 0.0,
+    val wind_degree: Int = 0,
+    val wind_dir: String = "",
+    val wind_kph: Double = 0.0,
+    val wind_mph: Double = 0.0
 )
 
 data class Location(
@@ -71,12 +70,12 @@ data class Location(
 )
 
 data class Condition(
-    val code: Int,
-    val icon: String,
-    val text: String
+    val code: Int = 0,
+    val icon: String = "",
+    val text: String = ""
 )
 
 data class CurrentWeatherData(
-    val current: Current,
-    val location: Location
+    val current: Current = Current(),
+    val location: Location = Location()
 )
