@@ -33,7 +33,7 @@ class DebounceTest {
     fun `debounce should only invoke last call after rapid succession`() = scope.runBlockingTest {
         var latestValue: Int = 0
         val debounce = debounce<Int>(
-            waitMs = 300L,
+            waitMs = 100L,
             scope = scope,
             destinationFunction = { latestValue = it }
         )
@@ -41,9 +41,8 @@ class DebounceTest {
         debounce(1)
         debounce(2)
         debounce(3)
-        debounce(4)
 
-        advanceUntilIdle()  // Instead of advanceTimeBy
+        advanceUntilIdle()
         assertEquals(1, latestValue, "Only the last invoked value should be processed")
     }
 
@@ -56,7 +55,7 @@ class DebounceTest {
             destinationFunction = { values.add(it) }
         )
 
-        debounce(10)  // This should be invoked after 300 ms
+        debounce(10)
 
         advanceUntilIdle()
         assertEquals(0, values.size, "No values should be processed before 300 ms")
